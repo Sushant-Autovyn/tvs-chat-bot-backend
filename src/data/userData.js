@@ -19,7 +19,8 @@ function generateTempPassword() {
 
 // ─── Send Welcome Email ───────────────────────────────────────────────────────
 async function sendWelcomeEmail(user, tempPassword) {
-  const loginUrl = `http://localhost:4200/support-login`;
+  const baseUrl = (process.env.DASHBOARD_URL || 'http://localhost:4200').replace(/\/$/, '');
+  const loginUrl = baseUrl;
   const html = `
     <!DOCTYPE html>
     <html>
