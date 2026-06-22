@@ -107,9 +107,15 @@ async function saveUser(userData) {
   const savedUser = await user.save();
 
   // Send email in background (non-blocking)
-  sendWelcomeEmail(savedUser, tempPassword).catch((err) => {
-    console.error(`[Email Error] Failed to send email to ${savedUser.email}:`, err.message);
-  });
+  console.log(`[Email] Attempting to send welcome email to ${savedUser.email}`);
+  sendWelcomeEmail(savedUser, tempPassword)
+    .then(() => {
+      console.log(`[Email] ✅ Sent successfully to ${savedUser.email}`);
+    })
+    .catch((err) => {
+      console.error(`[Email Error] ❌ Failed to send to ${savedUser.email}:`, err.message);
+      console.error(err);
+    });
 
   return savedUser;
 }
