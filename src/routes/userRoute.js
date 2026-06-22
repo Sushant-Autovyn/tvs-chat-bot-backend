@@ -4,16 +4,20 @@ const { saveUser, getAllUsers, updateUserStatus } = require('../data/userData');
 
 // save user details
 router.post('/', async (req, res) => {
+  console.log('[ROUTE] 🎯 POST /api/users HIT — body:', JSON.stringify(req.body));
   const { username, email, phone, issue, userId } = req.body;
 
   if (!username || !email || !phone || !issue) {
+    console.log('[ROUTE] ❌ Validation failed - missing fields');
     return res.status(400).json({ error: 'Username, email, phone, and issue are required' });
   }
 
   try {
     const user = await saveUser({ username, email, phone, issue, userId });
+    console.log('[ROUTE] ✅ User saved with ID:', user._id);
     res.status(201).json({ success: true, user });
   } catch (error) {
+    console.error('[ROUTE] ❌ saveUser failed:', error.message);
     res.status(500).json({ error: 'Failed to save user details' });
   }
 });
