@@ -1,0 +1,80 @@
+[
+  {
+    "intent": "greeting",
+    "keywords": ["hi","hii", "hello", "hey", "good morning", "good evening"],
+    "response": "Hello! How can I assist you today?",
+    "quickReplies": ["Login Issue", "Forgot Password"]
+  },
+  {
+    "intent": "forgot_password",
+    "keywords": ["forgot password", "reset password", "password reset", "change password"],
+    "response": "Click on the 'Forgot Password' link on the login page and follow the instructions to reset your password.",
+    "quickReplies": ["Login Issue", "Account Locked" ]
+  },
+  {
+    "intent": "login_issue",
+    "keywords": ["cannot login", "login failed", "unable to login", "login problem", "sign in","login issue"],
+    "response": "Please verify your username and password. If the issue persists, try resetting your password or contact support.",
+    "quickReplies": ["Forgot Password", "Account Locked"]
+  },
+  {
+    "intent": "account_locked",
+    "keywords": ["account locked", "user locked", "locked account"],
+    "response": "Your account may be locked due to multiple unsuccessful login attempts. Please wait for some time or contact support.",
+    "quickReplies": ["Forgot Password", "Login Issue"]
+  },
+  {
+    "intent": "access_denied",
+    "keywords": ["access denied", "permission denied", "not authorized", "unauthorized"],
+    "response": "You do not currently have permission to access this feature. Please contact your administrator.",
+    "quickReplies": []
+  },
+  {
+    "intent": "application_slow",
+    "keywords": ["slow", "hanging", "loading slowly", "performance issue", "lagging"],
+    "response": "Please clear your browser cache, check your internet connection, and try again.",
+    "quickReplies": ["Application Not Loading"]
+  },
+  {
+    "intent": "application_not_loading",
+    "keywords": ["not loading", "blank page", "page not opening", "unable to open"],
+    "response": "Please refresh the page and ensure you have a stable internet connection. If the issue continues, contact support.",
+    "quickReplies": ["Application Slow"]
+  },
+  {
+    "intent": "session_expired",
+    "keywords": ["session expired", "logged out automatically", "session timeout"],
+    "response": "Your session expired due to inactivity. Please login again.",
+    "quickReplies": ["Login Issue"]
+  },
+  {
+    "intent": "download_report",
+    "keywords": ["download report", "export report", "report download"],
+    "response": "Open the Reports section and click the Download or Export button.",
+    "quickReplies": ["Export Excel"]
+  },
+  {
+    "intent": "export_excel",
+    "keywords": ["excel", "export excel", "download excel", "xlsx"],
+    "response": "Use the Export to Excel option available on the report screen.",
+    "quickReplies": ["Download Report"]
+  },
+  {
+    "intent": "update_profile",
+    "keywords": ["update profile", "edit profile", "change email", "change mobile"],
+    "response": "Navigate to Profile Settings and update your details.",
+    "quickReplies": []
+  },
+  {
+    "intent": "search_records",
+    "keywords": ["search", "find record", "lookup", "find data"],
+    "response": "Use the search bar and apply filters to locate the required records.",
+    "quickReplies": []
+  },
+  {
+    "intent": "fallback",
+    "keywords": [],
+    "response": "Sorry, I couldn't understand your request. Please try rephrasing or contact support.",
+    "quickReplies": ["Forgot Password", "Login Issue"]
+  }
+]
