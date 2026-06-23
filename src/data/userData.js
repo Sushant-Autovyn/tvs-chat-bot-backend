@@ -54,6 +54,7 @@ async function sendWelcomeEmail(user, tempPassword) {
   // Where the user's chat portal lives (separate from agent dashboard)
   const baseUrl = (process.env.USER_CHAT_URL || process.env.DASHBOARD_URL || 'http://localhost:4200').replace(/\/$/, '');
   const loginUrl = baseUrl;
+  console.log(`[Email URL DEBUG] USER_CHAT_URL=${process.env.USER_CHAT_URL || '(missing)'} DASHBOARD_URL=${process.env.DASHBOARD_URL || '(missing)'} → using=${baseUrl}`);
   const html = `
     <!DOCTYPE html>
     <html>
