@@ -84,32 +84,35 @@ async function sendWelcomeEmail(user, tempPassword) {
         <div class="wrapper">
           <div class="header">
             <h1>TVS Dealer Support</h1>
-            <p>Your support ticket has been created.</p>
+            <p>Your support ticket has been registered.</p>
           </div>
           <div class="body">
-            <p>Dear <strong>${user.username}</strong>,</p>
-            <p>Your support request has been registered. You can use the credentials below to log in and chat directly with our support team.</p>
+            <p>Hello <strong>${user.username}</strong>,</p>
+            <p>Thank you for contacting TVS Dealer Support. We have received your request and a dedicated support specialist has been assigned to assist you.</p>
+            <p>To continue the conversation and track progress on your ticket, please sign in to your secure support portal using the credentials below.</p>
 
             <div class="creds-box">
-              <h3>Your Login Credentials</h3>
+              <h3>Your Sign-in Credentials</h3>
               <div class="cred-row">
                 <span class="cred-label">Email</span>
                 <span class="cred-value">${user.email}</span>
               </div>
               <div class="cred-row">
-                <span class="cred-label">Password</span>
+                <span class="cred-label">Temporary Password</span>
                 <span class="cred-value">${tempPassword}</span>
               </div>
             </div>
 
             <div class="btn-wrap">
-              <a href="${loginUrl}" class="btn">Open Chat Support</a>
+              <a href="${loginUrl}" class="btn">Sign in to Support Portal</a>
             </div>
 
-            <p style="margin-top: 28px; font-size: 13px; color: #64748b;">If you did not raise this request, please ignore this email or contact our support team immediately.</p>
+            <p style="margin-top: 24px; font-size: 13px; color: #64748b;">For your security, this temporary password is intended for first-time access only. We recommend updating it after you sign in.</p>
+            <p style="margin-top: 12px; font-size: 13px; color: #64748b;">If you did not request this support ticket, you may safely disregard this email. For any concerns, please reach out to our support team.</p>
           </div>
           <div class="footer">
-            <p>© ${new Date().getFullYear()} TVS Motor Company. All rights reserved.</p>
+            <p>This is an automated message from TVS Dealer Support. Please do not reply directly to this email.</p>
+            <p style="margin-top: 6px;">© ${new Date().getFullYear()} TVS Motor Company. All rights reserved.</p>
           </div>
         </div>
       </body>
@@ -119,7 +122,7 @@ async function sendWelcomeEmail(user, tempPassword) {
   return sendViaBrevo({
     to: user.email,
     toName: user.username,
-    subject: 'Your TVS Support Ticket – Login Credentials',
+    subject: 'TVS Dealer Support – Access your support portal',
     html,
   });
 }
