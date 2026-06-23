@@ -19,7 +19,8 @@ function generateTempPassword() {
 
 // ─── Send Welcome Email ───────────────────────────────────────────────────────
 async function sendWelcomeEmail(user, tempPassword) {
-  const baseUrl = (process.env.DASHBOARD_URL || 'http://localhost:4200').replace(/\/$/, '');
+  // Where the user's chat portal lives (separate from agent dashboard)
+  const baseUrl = (process.env.USER_CHAT_URL || process.env.DASHBOARD_URL || 'http://localhost:4200').replace(/\/$/, '');
   const loginUrl = baseUrl;
   const html = `
     <!DOCTYPE html>
