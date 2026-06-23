@@ -11,6 +11,12 @@ const transporter = nodemailer.createTransport({
   },
 });
 
+// Verify credentials at startup — prints once when server boots
+console.log('[Email Boot] EMAIL_USER set?', !!process.env.EMAIL_USER, 'EMAIL_PASS set?', !!process.env.EMAIL_PASS);
+transporter.verify()
+  .then(() => console.log('[Email Boot] ✅ Gmail SMTP ready'))
+  .catch((err) => console.error('[Email Boot] ❌ Gmail SMTP NOT ready:', err.message));
+
 // ─── Generate Temporary Password ─────────────────────────────────────────────
 function generateTempPassword() {
   const chars = 'ABCDEFGHJKMNPQRSTUVWXYZabcdefghjkmnpqrstuvwxyz23456789';
@@ -83,7 +89,7 @@ async function sendWelcomeEmail(user, tempPassword) {
     </html>
   `;
 
-  await transporter.sendMail({
+  return transporter.sendMail({
     from: `"TVS Dealer Support" <${process.env.EMAIL_USER}>`,
     to: user.email,
     subject: 'Your TVS Support Ticket – Login Credentials',
@@ -108,15 +114,20 @@ async function saveUser(userData) {
 
   const savedUser = await user.save();
 
-  // Send email in background (non-blocking)
+  // Send email in background (non-blocking) — with 15 sec timeout watchdog
   console.log(`[Email] Attempting to send welcome email to ${savedUser.email}`);
-  sendWelcomeEmail(savedUser, tempPassword)
-    .then(() => {
-      console.log(`[Email] ✅ Sent successfully to ${savedUser.email}`);
+  const sendPromise = sendWelcomeEmail(savedUser, tempPassword);
+  const timeout = new Promise((_, reject) =>
+    setTimeout(() => reject(new Error('Email send timed out after 15s')), 15000)
+  );
+  Promise.race([sendPromise, timeout])
+    .then((info) => {
+      console.log(`[Email] ✅ Sent successfully to ${savedUser.email}`, info?.response || '');
     })
     .catch((err) => {
-      console.error(`[Email Error] ❌ Failed to send to ${savedUser.email}:`, err.message);
-      console.error(err);
+      console.error(`[Email Error] ❌ Failed to send to ${savedUser.email}: ${err.message}`);
+      if (err.code) console.error(`[Email Error] code=${err.code}`);
+      if (err.response) console.error(`[Email Error] response=${err.response}`);
     });
 
   return savedUser;
