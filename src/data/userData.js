@@ -6,8 +6,10 @@ const User = require('../models/usermodel');
 // Required env vars:
 //   BREVO_API_KEY       — xkeysib-... key from Brevo dashboard → SMTP & API → API Keys
 //   BREVO_SENDER_EMAIL  — a verified sender email in Brevo
-//   BREVO_SENDER_NAME   — (optional) display name, defaults to 'TVS Dealer Support'
+//   BREVO_SENDER_NAME   — (optional) display name, defaults to 'Customer Support'
+//   SUPPORT_BRAND_NAME  — (optional) brand name shown in email body & subject
 const BREVO_API_URL = 'https://api.brevo.com/v3/smtp/email';
+const BRAND_NAME = process.env.SUPPORT_BRAND_NAME || 'Customer Support';
 
 console.log('[Email Boot] BREVO_API_KEY set?', !!process.env.BREVO_API_KEY,
   'BREVO_SENDER_EMAIL:', process.env.BREVO_SENDER_EMAIL || '(missing)');
@@ -18,7 +20,7 @@ async function sendViaBrevo({ to, toName, subject, html }) {
 
   const body = {
     sender: {
-      name: process.env.BREVO_SENDER_NAME || 'TVS Dealer Support',
+      name: process.env.BREVO_SENDER_NAME || BRAND_NAME,
       email: process.env.BREVO_SENDER_EMAIL,
     },
     to: [{ email: to, name: toName || to }],
@@ -83,12 +85,12 @@ async function sendWelcomeEmail(user, tempPassword) {
       <body>
         <div class="wrapper">
           <div class="header">
-            <h1>TVS Dealer Support</h1>
+            <h1>${BRAND_NAME}</h1>
             <p>Your support ticket has been registered.</p>
           </div>
           <div class="body">
             <p>Hello <strong>${user.username}</strong>,</p>
-            <p>Thank you for contacting TVS Dealer Support. We have received your request and a dedicated support specialist has been assigned to assist you.</p>
+            <p>Thank you for contacting our support team. We have received your request and a dedicated support specialist has been assigned to assist you.</p>
             <p>To continue the conversation and track progress on your ticket, please sign in to your secure support portal using the credentials below.</p>
 
             <div class="creds-box">
@@ -111,8 +113,8 @@ async function sendWelcomeEmail(user, tempPassword) {
             <p style="margin-top: 12px; font-size: 13px; color: #64748b;">If you did not request this support ticket, you may safely disregard this email. For any concerns, please reach out to our support team.</p>
           </div>
           <div class="footer">
-            <p>This is an automated message from TVS Dealer Support. Please do not reply directly to this email.</p>
-            <p style="margin-top: 6px;">© ${new Date().getFullYear()} TVS Motor Company. All rights reserved.</p>
+            <p>This is an automated message. Please do not reply directly to this email.</p>
+            <p style="margin-top: 6px;">© ${new Date().getFullYear()} ${BRAND_NAME}. All rights reserved.</p>
           </div>
         </div>
       </body>
@@ -122,7 +124,7 @@ async function sendWelcomeEmail(user, tempPassword) {
   return sendViaBrevo({
     to: user.email,
     toName: user.username,
-    subject: 'TVS Dealer Support – Access your support portal',
+    subject: `${BRAND_NAME} – Access your support portal`,
     html,
   });
 }
