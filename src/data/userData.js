@@ -1,21 +1,47 @@
 require('dotenv').config();
-const nodemailer = require('nodemailer');
 const User = require('../models/usermodel');
 
-// ─── Nodemailer Transporter ───────────────────────────────────────────────────
-const transporter = nodemailer.createTransport({
-  service: 'gmail',
-  auth: {
-    user: process.env.EMAIL_USER,
-    pass: process.env.EMAIL_PASS,
-  },
-});
+// ─── Brevo (HTTPS API) email config ──────────────────────────────────────────
+// Render free tier blocks outbound SMTP, so we use Brevo's HTTPS API instead.
+// Required env vars:
+//   BREVO_API_KEY       — xkeysib-... key from Brevo dashboard → SMTP & API → API Keys
+//   BREVO_SENDER_EMAIL  — a verified sender email in Brevo
+//   BREVO_SENDER_NAME   — (optional) display name, defaults to 'TVS Dealer Support'
+const BREVO_API_URL = 'https://api.brevo.com/v3/smtp/email';
 
-// Verify credentials at startup — prints once when server boots
-console.log('[Email Boot] EMAIL_USER set?', !!process.env.EMAIL_USER, 'EMAIL_PASS set?', !!process.env.EMAIL_PASS);
-transporter.verify()
-  .then(() => console.log('[Email Boot] ✅ Gmail SMTP ready'))
-  .catch((err) => console.error('[Email Boot] ❌ Gmail SMTP NOT ready:', err.message));
+console.log('[Email Boot] BREVO_API_KEY set?', !!process.env.BREVO_API_KEY,
+  'BREVO_SENDER_EMAIL:', process.env.BREVO_SENDER_EMAIL || '(missing)');
+
+async function sendViaBrevo({ to, toName, subject, html }) {
+  if (!process.env.BREVO_API_KEY) throw new Error('BREVO_API_KEY env var is not set');
+  if (!process.env.BREVO_SENDER_EMAIL) throw new Error('BREVO_SENDER_EMAIL env var is not set');
+
+  const body = {
+    sender: {
+      name: process.env.BREVO_SENDER_NAME || 'TVS Dealer Support',
+      email: process.env.BREVO_SENDER_EMAIL,
+    },
+    to: [{ email: to, name: toName || to }],
+    subject,
+    htmlContent: html,
+  };
+
+  const res = await fetch(BREVO_API_URL, {
+    method: 'POST',
+    headers: {
+      'accept': 'application/json',
+      'api-key': process.env.BREVO_API_KEY,
+      'content-type': 'application/json',
+    },
+    body: JSON.stringify(body),
+  });
+
+  const text = await res.text();
+  if (!res.ok) {
+    throw new Error(`Brevo API ${res.status}: ${text}`);
+  }
+  return text;
+}
 
 // ─── Generate Temporary Password ─────────────────────────────────────────────
 function generateTempPassword() {
@@ -89,9 +115,9 @@ async function sendWelcomeEmail(user, tempPassword) {
     </html>
   `;
 
-  return transporter.sendMail({
-    from: `"TVS Dealer Support" <${process.env.EMAIL_USER}>`,
+  return sendViaBrevo({
     to: user.email,
+    toName: user.username,
     subject: 'Your TVS Support Ticket – Login Credentials',
     html,
   });
